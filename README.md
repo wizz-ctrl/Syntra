@@ -1,70 +1,70 @@
-# Getting Started with Create React App
+# Syntra - AI-Based Study Planner Application
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+**Syntra** is a prototype for an AI-powered study planner application, developed as a Software Engineering Project. The application acts as an intelligent scheduling engine that helps students effortlessly organize their tasks, track their academic analytics, and manage their study sessions with an optimized, auto-generated calendar. 
 
-## Available Scripts
+The UI/UX is built with absolute pixel-perfect fidelity based on modern design principles, focusing on providing a clean, distraction-free, and highly responsive user experience.
 
-In the project directory, you can run:
+## ✨ Features
 
-### `npm start`
+- **🔐 Authentication**
+  - Secure Login and Sign-up screens.
+  - Streamlined routing directly into the dashboard upon successful authentication.
+  
+- **📊 Interactive Dashboard**
+  - High-level overview of daily progress, hours studied, tasks completed, and completion rates.
+  - Quick-access to today's schedule and priority tasks.
+  
+- **📝 Intelligent Task Management**
+  - Comprehensive "Add Task" module.
+  - Assign subjects via visual cards, set strict deadlines, define estimated time blocks, and choose priority levels (Low, Medium, High).
+  
+- **📅 AI-Optimized Schedule**
+  - A beautiful weekly calendar grid that automatically segments tasks into strict 1-hour, 2-hour, or 3-hour study blocks.
+  - Intelligent spacing ensures no overlapping tasks, allowing students to focus on one subject at a time.
+  - Clean, color-coded task boxes for instant visual recognition of subjects (e.g., Deep Learning, Cyber Security, Operating Systems).
+  
+- **📈 Deep Analytics**
+  - Visual charts and metric cards detailing study trends, best-performing subjects, and overall productivity metrics.
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+## 🛠️ Technology Stack
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+- **Frontend Framework:** [React 18](https://reactjs.org/)
+- **Build Tool:** [Vite](https://vitejs.dev/)
+- **Language:** [TypeScript](https://www.typescriptlang.org/)
+- **Styling:** [Tailwind CSS](https://tailwindcss.com/)
+- **Design Platform:** [Figma](https://www.figma.com/)
 
-### `npm test`
+## 🚀 Getting Started
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+### Prerequisites
+Make sure you have [Node.js](https://nodejs.org/) installed on your machine.
 
-### `npm run build`
+### Installation
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+1. **Clone the repository** (if you haven't already):
+   ```bash
+   git clone https://github.com/wizz-ctrl/Syntra.git
+   cd Syntra
+   ```
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+2. **Install dependencies**:
+   ```bash
+   npm install
+   ```
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+3. **Start the development server**:
+   ```bash
+   npm run dev
+   ```
 
-### `npm run eject`
+4. **Open the app**:
+   Navigate to `http://localhost:5173/` in your browser.
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+## 🎨 Design & Architecture
+This project emphasizes high-fidelity frontend development, mapping precise design specifications from Figma mockups into reusable React components. It uses Tailwind CSS heavily for rapid, responsive UI styling, employing custom color palettes, absolute positioning, and specialized grid layouts for the rigid AI scheduling engine.
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+## 🎓 Academic Context
+Developed as a Software Engineering Project prototype to demonstrate UI/UX implementation, component-based architecture, and modern web development workflows.
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
-
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+---
+*All rights reserved. Syntra 2026*
