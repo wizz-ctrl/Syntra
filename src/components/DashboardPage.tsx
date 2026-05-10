@@ -16,6 +16,7 @@ import iconNotification from '../assets/iconstack.io - (Notification 03).svg';
 import iconArrowRight from '../assets/iconstack.io - (Alt Arrow Right).svg';
 import iconCheck from '../assets/iconstack.io - (Ic Fluent Checkmark 24 Filled).svg';
 import iconLogout from '../assets/iconstack.io - (Log Out).svg';
+import { formatLocalISODate, formatLongDate, isSameIsoDay, type PlannedTask } from '../taskPlanner';
 
 const menuItems = [
   { label: 'Home', icon: iconHome, active: true },
@@ -38,31 +39,32 @@ type SessionCardProps = {
 type DashboardPageProps = {
   onSignOut?: () => void;
   onNavigate?: (page: string) => void;
+  tasks?: PlannedTask[];
 };
 
 function SessionCard({ time, title, subtitle, image, accent, border, checked = false }: SessionCardProps) {
   return (
-    <article className={`flex items-stretch overflow-hidden rounded-[14px] border ${border} bg-white`}>
+    <article className={`relative flex items-stretch overflow-hidden rounded-[14px] border ${border} bg-white`}>
       {/* Accent bar + text */}
-      <div className="relative flex-1 min-w-0 py-4 pl-6 pr-3">
-        <span className="absolute bottom-4 left-2 top-4 w-[6px] rounded-full" style={{ backgroundColor: accent }} />
-        <p className="text-[13px] text-[#8e8e8e] font-['Calibri']">{time}</p>
-        <h4 className="mt-1 text-[20px] leading-tight text-black font-['Calibri'] font-bold">{title}</h4>
-        <p className="mt-1 text-[13px] leading-tight text-[#8e8e8e] font-['Calibri']">{subtitle}</p>
-      </div>
-
-      {/* Checkbox */}
-      <div className="flex-shrink-0 flex items-center px-3">
-        <div
-          className={`flex h-[30px] w-[30px] items-center justify-center rounded-[8px] border border-[#8484f1] ${checked ? 'bg-[#58a1e1]' : 'bg-white'}`}
-        >
-          {checked ? <img src={iconCheck} alt="" className="h-4 w-4" /> : null}
-        </div>
+      <div className="relative flex-1 min-w-0 py-5 pl-7 pr-12">
+        <span className="absolute bottom-4 left-2 top-4 w-[10px] rounded-full" style={{ backgroundColor: accent }} />
+        <p className="text-[14px] text-[#8e8e8e] font-['Calibri']">{time}</p>
+        <h4 className="mt-1 text-[24px] leading-tight text-black font-['Calibri'] font-bold">{title}</h4>
+        <p className="mt-1 text-[14px] leading-tight text-[#8e8e8e] font-['Calibri']">{subtitle}</p>
       </div>
 
       {/* Image — flush to right border */}
-      <div className="flex-shrink-0 w-[30%] max-w-[200px] self-stretch overflow-hidden">
+      <div className="flex-shrink-0 w-[38%] max-w-[260px] self-stretch overflow-hidden">
         <img src={image} alt="" className="h-full w-full object-cover" />
+      </div>
+
+      {/* Checkbox centered on the text/image boundary */}
+      <div
+        className={`absolute right-[38%] top-1/2 flex h-[34px] w-[34px] -translate-y-1/2 translate-x-1/2 items-center justify-center rounded-[9px] border border-[#8484f1] ${
+          checked ? 'bg-[#58a1e1]' : 'bg-white'
+        }`}
+      >
+        {checked ? <img src={iconCheck} alt="" className="h-4 w-4" /> : null}
       </div>
     </article>
   );
@@ -119,13 +121,114 @@ function Sidebar({ onSignOut, onNavigate }: { onSignOut?: () => void; onNavigate
   );
 }
 
-function DashboardMain({ onNavigate }: { onNavigate?: (page: string) => void }) {
+function TaskCard({ task }: { task: PlannedTask }) {
+  const priorityStyles = {
+    Low: 'border-[#22c55e] bg-[#f0fdf4] text-[#15803d]',
+    Medium: 'border-[#eab308] bg-[#fefce8] text-[#a16207]',
+    High: 'border-[#ef4444] bg-[#fef2f2] text-[#b91c1c]',
+  } as const;
+
+  return (
+    <article className="rounded-[14px] border border-[#b4b4b4] bg-white p-4 shadow-sm">
+      <div className="flex items-start justify-between gap-3">
+        <div>
+          <p className="text-[12px] font-['Calibri'] font-bold text-[#8e8e8e]">{task.subject}</p>
+          <h4 className="mt-1 text-[18px] font-['Calibri'] font-bold text-black">{task.title}</h4>
+          <p className="mt-1 text-[12px] font-['Calibri'] text-[#8e8e8e]">Due {task.deadlineLabel}</p>
+        </div>
+        <span className={`rounded-full border px-3 py-1 text-[11px] font-['Calibri'] font-bold ${priorityStyles[task.priority]}`}>
+          {task.priority}
+        </span>
+      </div>
+      {task.notes ? <p className="mt-3 text-[12px] leading-snug font-['Calibri'] text-[#6d6d88]">{task.notes}</p> : null}
+    </article>
+  );
+}
+
+function DashboardMain({ onNavigate, tasks = [] }: { onNavigate?: (page: string) => void; tasks?: PlannedTask[] }) {
+  const todayISO = formatLocalISODate(new Date());
+  const todayTasks = tasks.filter((task) => isSameIsoDay(task.deadlineISO, todayISO));
+  // Default sessions (existing UI items)
+  const defaultSessions = [
+    {
+      time: '9:00-10:30 AM',
+      title: 'Operating systems',
+      subtitle: 'Virtual Memory Management',
+      image: imgOperatingSystems,
+      accent: '#000070',
+      border: 'border-[#000070]',
+      checked: false,
+    },
+    {
+      time: '11:00-12:00 PM',
+      title: 'Deep Learning',
+      subtitle: 'Convolutional Neural Networks',
+      image: imgDeepLearning,
+      accent: '#58a1e1',
+      border: 'border-[#58a1e1]',
+      checked: true,
+    },
+    {
+      time: '2:00-3:30 PM',
+      title: 'Cyber Security',
+      subtitle: 'Elliptic Curve Cryptography',
+      image: imgCyberSecurity,
+      accent: '#1b1bfc',
+      border: 'border-[#1b1bfc]',
+      checked: false,
+    },
+  ];
+
+  // map subject name to assets/colors
+  const subjectMap: Record<string, { image: string; accent: string; border: string }> = {
+    'Operating Systems': { image: imgOperatingSystems, accent: '#1CE931', border: 'border-[#1CE931]' },
+    'Deep Learning': { image: imgDeepLearning, accent: '#58a1e1', border: 'border-[#58a1e1]' },
+    'Cyber Security': { image: imgCyberSecurity, accent: '#1b1bfc', border: 'border-[#1b1bfc]' },
+  };
+
+  // If a task's subject isn't one of the known subjects, pick one of the course div images
+  // deterministically based on the subject string so the same subject always gets the same image.
+  const courseAssets = [
+    { image: imgOperatingSystems, accent: '#1CE931', border: 'border-[#1CE931]' },
+    { image: imgDeepLearning, accent: '#58a1e1', border: 'border-[#58a1e1]' },
+    { image: imgCyberSecurity, accent: '#1b1bfc', border: 'border-[#1b1bfc]' },
+  ];
+
+  function pickCourseMeta(subject: string | undefined) {
+    if (!subject) return courseAssets[0];
+    const exact = subjectMap[subject];
+    if (exact) return exact;
+    // deterministic hash to choose an index
+    let hash = 0;
+    for (let i = 0; i < subject.length; i++) {
+      hash = (hash * 31 + subject.charCodeAt(i)) | 0;
+    }
+    const idx = Math.abs(hash) % courseAssets.length;
+    return courseAssets[idx];
+  }
+
+  // Convert today's tasks into SessionCard props
+  const todayTaskSessions = todayTasks.map((t) => {
+    const meta = pickCourseMeta(t.subject);
+    return {
+      time: 'TBD',
+      title: t.title,
+      subtitle: t.notes || '',
+      image: meta.image,
+      accent: meta.accent,
+      border: meta.border,
+      checked: false,
+    };
+  });
+
+  const allSessions = [...defaultSessions, ...todayTaskSessions];
+  const totalTodayItems = allSessions.length;
   return (
     <main className="bg-[#f0f0ff] min-h-screen overflow-y-auto">
-      <div className="px-5 py-5 lg:px-8 lg:py-6">
+      <div className="mx-auto max-w-[1120px] px-5 py-5 lg:px-8 lg:py-6">
       <header className="flex flex-wrap items-start justify-between gap-3">
         <div>
-          <p className="text-[11px] font-['Calibri'] font-bold text-[#5454b7] lg:text-[12px]">Monday, April 11, 2026</p>
+          <p className="text-[11px] font-['Calibri'] font-bold text-[#5454b7] lg:text-[12px]">{formatLongDate(new Date())}</p>
           <h2 className="mt-1 text-[28px] leading-[1.1] font-['Calibri'] font-bold text-black lg:text-[32px]">Good Morning, Taimoor</h2>
           <p className="mt-2 text-[11px] font-['Calibri'] text-[#8e8e8e] lg:text-[12px]">Here’s Your Study Plan for Today.</p>
         </div>
@@ -140,25 +243,25 @@ function DashboardMain({ onNavigate }: { onNavigate?: (page: string) => void }) 
         </div>
       </header>
 
-      <section className="mt-5 grid grid-cols-2 gap-4">
-        <article className="flex items-center gap-3 rounded-[14px] border border-[#8e8e8e] bg-white p-4">
+      <section className="mt-5 grid grid-cols-1 gap-4 md:grid-cols-2">
+        <article className="flex min-h-[140px] items-center gap-4 rounded-[14px] border border-[#8e8e8e] bg-white p-5">
           <div className="flex-1 min-w-0">
-            <p className="text-[13px] leading-tight font-['Calibri'] text-[#8e8e8e]">Tasks Completed</p>
-            <p className="mt-1 text-[38px] leading-none font-['Calibri'] font-bold text-black">1</p>
-            <p className="text-[13px] font-['Calibri'] text-[#8e8e8e]">of 3 Today</p>
+            <p className="text-[14px] leading-tight font-['Calibri'] text-[#8e8e8e]">Tasks Completed</p>
+            <p className="mt-1 text-[42px] leading-none font-['Calibri'] font-bold text-black">1</p>
+            <p className="text-[14px] font-['Calibri'] text-[#8e8e8e]">of {totalTodayItems} Today</p>
           </div>
-          <div className="flex-shrink-0 w-[100px] h-[100px] flex items-center justify-center overflow-hidden rounded-[10px]">
+          <div className="flex-shrink-0 w-[38%] max-w-[170px] self-stretch overflow-hidden rounded-[12px]">
             <img src={imgTasksIllustration} alt="" className="h-full w-full object-contain" />
           </div>
         </article>
 
-        <article className="flex items-center gap-3 rounded-[14px] border border-[#8e8e8e] bg-white p-4">
+        <article className="flex min-h-[140px] items-center gap-4 rounded-[14px] border border-[#8e8e8e] bg-white p-5">
           <div className="flex-1 min-w-0">
-            <p className="text-[13px] leading-tight font-['Calibri'] text-[#8e8e8e]">Hours Studied</p>
-            <p className="mt-1 text-[38px] leading-none font-['Calibri'] font-bold text-black">11</p>
-            <p className="text-[13px] font-['Calibri'] text-[#8e8e8e]">this week</p>
+            <p className="text-[14px] leading-tight font-['Calibri'] text-[#8e8e8e]">Hours Studied</p>
+            <p className="mt-1 text-[42px] leading-none font-['Calibri'] font-bold text-black">11</p>
+            <p className="text-[14px] font-['Calibri'] text-[#8e8e8e]">this week</p>
           </div>
-          <div className="flex-shrink-0 w-[100px] h-[100px] flex items-center justify-center overflow-hidden rounded-[10px]">
+          <div className="flex-shrink-0 w-[38%] max-w-[170px] self-stretch overflow-hidden rounded-[12px]">
             <img src={imgHoursIllustration} alt="" className="h-full w-full object-contain" />
           </div>
         </article>
@@ -192,34 +295,21 @@ function DashboardMain({ onNavigate }: { onNavigate?: (page: string) => void }) 
         </div>
 
         <div className="mt-4 space-y-3">
-          <SessionCard
-            time="9:00-10:30 AM"
-            title="Operating systems"
-            subtitle="Virtual Memory Management"
-            image={imgOperatingSystems}
-            accent="#000070"
-            border="border-[#000070]"
-          />
-
-          <SessionCard
-            time="11:00-12:00 PM"
-            title="Deep Learning"
-            subtitle="Convolutional Neural Networks"
-            image={imgDeepLearning}
-            accent="#58a1e1"
-            border="border-[#58a1e1]"
-            checked
-          />
-
-          <SessionCard
-            time="2:00-3:30 PM"
-            title="Cyber Security"
-            subtitle="Elliptic Curve Cryptography"
-            image={imgCyberSecurity}
-            accent="#1b1bfc"
-            border="border-[#1b1bfc]"
-          />
+          {allSessions.map((s, idx) => (
+            <SessionCard
+              key={`${s.title}-${idx}`}
+              time={s.time}
+              title={s.title}
+              subtitle={s.subtitle}
+              image={s.image}
+              accent={s.accent}
+              border={s.border}
+              checked={s.checked}
+            />
+          ))}
         </div>
+
+        {/* Removed duplicate "Added Tasks for Today" listing — created tasks are now shown in the session list above. */}
       </section>
 
       <footer className="mt-5 border-t border-[#8e8e8e] pt-3 text-center">
@@ -238,14 +328,14 @@ function DashboardMain({ onNavigate }: { onNavigate?: (page: string) => void }) 
   );
 }
 
-export default function DashboardPage({ onSignOut, onNavigate }: DashboardPageProps) {
+export default function DashboardPage({ onSignOut, onNavigate, tasks }: DashboardPageProps) {
   return (
     <div className="flex min-h-screen bg-white">
       <div className="hidden md:block w-[220px] lg:w-[250px] xl:w-[270px] flex-shrink-0">
         <Sidebar onSignOut={onSignOut} onNavigate={onNavigate} />
       </div>
       <div className="flex-1 min-w-0 overflow-y-auto">
-        <DashboardMain onNavigate={onNavigate} />
+        <DashboardMain onNavigate={onNavigate} tasks={tasks} />
       </div>
     </div>
   );

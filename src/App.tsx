@@ -5,9 +5,11 @@ import AnalyticsPage from './components/AnalyticsPage'
 import SignupPage from './components/SignupPage'
 import AddTaskPage from './components/AddTaskPage'
 import SchedulePage from './components/SchedulePage'
+import ProfilePage from './components/ProfilePage'
+import { type PlannedTask } from './taskPlanner'
 import './index.css'
 
-type Screen = 'dashboard' | 'login' | 'analytics' | 'signup' | 'tasks' | 'schedule'
+type Screen = 'dashboard' | 'login' | 'analytics' | 'signup' | 'tasks' | 'schedule' | 'profile'
 
 function handleNav(page: string, setScreen: (s: Screen) => void) {
   const map: Record<string, Screen> = {
@@ -17,12 +19,19 @@ function handleNav(page: string, setScreen: (s: Screen) => void) {
     login: 'login',
     signup: 'signup',
     schedule: 'schedule',
+    profile: 'profile',
   }
   if (map[page]) setScreen(map[page])
 }
 
 function App() {
   const [screen, setScreen] = useState<Screen>('login')
+  const [tasks, setTasks] = useState<PlannedTask[]>([])
+
+  const handleCreateTask = (task: PlannedTask) => {
+    setTasks((current) => [...current, task])
+    setScreen('dashboard')
+  }
 
   if (screen === 'login') {
     return <LoginPage onLogin={() => setScreen('dashboard')} onNavigate={(page) => handleNav(page, setScreen)} />
@@ -37,14 +46,18 @@ function App() {
   }
 
   if (screen === 'tasks') {
-    return <AddTaskPage onNavigate={(page) => handleNav(page, setScreen)} onSignOut={() => setScreen('login')} />
+    return <AddTaskPage onNavigate={(page) => handleNav(page, setScreen)} onSignOut={() => setScreen('login')} onCreateTask={handleCreateTask} />
   }
 
   if (screen === 'schedule') {
-    return <SchedulePage onNavigate={(page) => handleNav(page, setScreen)} onSignOut={() => setScreen('login')} />
+    return <SchedulePage onNavigate={(page) => handleNav(page, setScreen)} onSignOut={() => setScreen('login')} tasks={tasks} />
   }
 
-  return <DashboardPage onSignOut={() => setScreen('login')} onNavigate={(page) => handleNav(page, setScreen)} />
+  if (screen === 'profile') {
+    return <ProfilePage onNavigate={(page) => handleNav(page, setScreen)} onSignOut={() => setScreen('login')} />
+  }
+
+  return <DashboardPage onSignOut={() => setScreen('login')} onNavigate={(page) => handleNav(page, setScreen)} tasks={tasks} />
 }
 
 export default App

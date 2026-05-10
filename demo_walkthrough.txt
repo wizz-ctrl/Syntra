@@ -1,0 +1,101 @@
+Demo Walkthrough — Syntra App
+
+Instructions: You will place screenshots between the labeled sections. Each section contains: a short label, what the user sees, what the user can do, suggested screenshot filename, and a short narrator paragraph describing the transition to the next screen.
+
+1) Screenshot 01 — Login Screen
+- Suggested filename: screenshot-01-login.png
+- What the user sees: App logo, email and password fields, "Sign In" button, "Forgot password" link, and a small hero illustration to the right.
+- What the user can do: Enter credentials, toggle "Remember me" (if present), click "Sign In", or follow "Forgot password".
+- Narration / transition: "User signs in with their credentials. On success the user is redirected to the Dashboard, which summarizes today's plan and quick actions."
+
+Annotation tips: highlight the email/password fields and the primary ‘Sign In’ button. Add a note pointing to any error message area.
+
+
+2) Screenshot 02 — Dashboard Overview (Top)
+- Suggested filename: screenshot-02-dashboard-top.png
+- What the user sees: Date & welcome message, summary cards (Tasks Completed, Hours Studied), AI Scheduling banner, and the "+ Add Task" primary action button.
+- What the user can do: Click "+ Add Task", open notifications, or navigate via the sidebar menu to other app areas.
+- Narration / transition: "After login, users land on the Dashboard where they can quickly add tasks or trigger AI scheduling. Clicking + Add Task opens the Add Task form."
+
+Annotation tips: call out the "+ Add Task" button and the summary numbers. Use arrows to show how to reach the sidebar menu.
+
+
+3) Screenshot 03 — Today's Schedule (Sessions list)
+- Suggested filename: screenshot-03-dashboard-sessions.png
+- What the user sees: A vertical list of session cards for today (course image, title, time, small progress indicator), and newly-added tasks merged into the same list.
+- What the user can do: Mark sessions complete, open a session for details, or click "View all" to open the full schedule page.
+- Narration / transition: "The sessions view shows both scheduled classes and user-created tasks placed inline. To see the week view, click 'View all' which opens the Schedule."
+
+Annotation tips: highlight a created task entry and the matching course image. Add a note that "created tasks appear here inline (not as a duplicate list)."
+
+
+4) Screenshot 04 — Add Task Form
+- Suggested filename: screenshot-04-add-task.png
+- What the user sees: Add Task form fields: Subject (dropdown or free text), Title, Deadline (date picker), Estimated Hours, Priority, Notes, and a Submit/Save button.
+- What the user can do: Fill required fields (Title + Deadline), set priority/estHours, and submit to add the task to the schedule.
+- Narration / transition: "When a task is created it is added to the app state and appears in the Dashboard and Schedule. After submitting, the UI confirms creation and returns to the Dashboard or stays on the form per UX choice."
+
+Annotation tips: draw a rectangle around required fields, and annotate the Submit button with an arrow + label "Click to create task".
+
+
+5) Screenshot 05 — Task Created Confirmation / Toast (optional)
+- Suggested filename: screenshot-05-task-created.png
+- What the user sees: A small confirmation message or toast that the task was created successfully, or a highlighted newly-added task in the list.
+- What the user can do: Click to view the task details, or continue editing tasks.
+- Narration / transition: "On success the app briefly shows confirmation, then the task appears among the session cards for today (if deadline is today). Next we navigate to the Schedule to view the week."
+
+Annotation tips: capture the toast or emphasize the newly-created task with an outline and label "New task".
+
+
+6) Screenshot 06 — Dashboard (Added task inside sessions)
+- Suggested filename: screenshot-06-dashboard-task-inline.png
+- What the user sees: The new task rendered visually like other sessions (course image at right, left accent color), with time labeled "TBD" if no scheduled hour provided.
+- What the user can do: Interact with the card (mark complete or open details), or use the menu to jump to the schedule or analytics.
+- Narration / transition: "Created tasks are visually integrated into the session cards to keep the daily plan cohesive. To adjust when the task occurs, open the Schedule view."
+
+Annotation tips: label the accent color and the course image, and add a short note: "If subject is unknown, the app picks one of the course images deterministically." 
+
+
+7) Screenshot 07 — Schedule (Weekly Grid)
+- Suggested filename: screenshot-07-schedule-week.png
+- What the user sees: A 7-day calendar grid with events placed on their due dates. Newly created tasks show up on the matching day (default time: 4:00 PM if not auto-scheduled).
+- What the user can do: Click an event to view/edit, drag/drop if implemented, or open the day to see a grouped list of events.
+- Narration / transition: "The Schedule page shows weekly placements. Tasks with deadlines are injected into the grid; clicking a task opens details where the user can reschedule or mark it complete."
+
+Annotation tips: mark the new task event and show the day header. Add a text label: "Default placement: 16:00 if no preferred time provided."
+
+
+8) Screenshot 08 — Schedule (Task details / expanded event)
+- Suggested filename: screenshot-08-schedule-task-detail.png
+- What the user sees: Task detail modal or side panel showing Title, Subject, Deadline, Notes, Priority, estimated hours and action buttons (Edit, Delete, Mark Complete).
+- What the user can do: Modify details, change the schedule time/day, or delete the task.
+- Narration / transition: "From the calendar open the task to update its scheduling or metadata. After editing, changes reflect on Dashboard and in the calendar."
+
+Annotation tips: point to the editable fields and action buttons. Add a note: "Changes are in-memory (suggested: persist to localStorage for durability)."
+
+
+9) Screenshot 09 — Analytics Overview
+- Suggested filename: screenshot-09-analytics.png
+- What the user sees: Charts or summary metrics (hours studied, tasks completed, progress by subject), and selectable time ranges.
+- What the user can do: Filter by week/month, hover charts for details, and identify subjects needing attention.
+- Narration / transition: "Analytics aggregates tasks and study hours. From here, users can identify workload hotspots and return to the Dashboard or Schedule to act on them."
+
+Annotation tips: annotate a chart legend and a highlighted stat. Add a caption: "Use filters to inspect specific date ranges."
+
+
+10) Screenshot 10 — Profile (Edit and Save)
+- Suggested filename: screenshot-10-profile-edit.png
+- What the user sees: User profile fields (name, email), an Edit toggle, editable fields when in edit mode, and a Save/Cancel pair of buttons.
+- What the user can do: Update profile details and save changes, or cancel to revert.
+- Narration / transition: "Profile settings let the user update their details. After saving, return to the Dashboard to continue work, or sign out from the sidebar."
+
+Annotation tips: highlight the Edit button and the Save button. Add a note: "Profile changes are local; implement persistence if needed."
+
+
+Appendix — Layout guidelines for placing screenshots in the DOCX
+- Use one screenshot per labeled section. Center each image and add the suggested filename as a caption.
+- Above each screenshot paste the “What the user sees” paragraph; below the screenshot paste the “What the user can do” plus the short narration paragraph.
+- Add numbered labels on the screenshot images inside the DOCX (1 through 10) and place arrows or callouts on the primary interaction points (buttons, fields, event cards).
+- If you prefer the docx generated for you, provide the 10 images named exactly as suggested and I can assemble the DOCX with captions and the paragraphs already inserted.
+
+Delivery note: saved as `demo_walkthrough.txt` in the project root. If you want, I can convert this into a `.docx` and insert the screenshots automatically—just upload the images or place them in `src/docs/screenshots/` and tell me to proceed.

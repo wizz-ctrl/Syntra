@@ -22,6 +22,7 @@ import iconCalendar from '../assets/iconstack.io - (Calendar Event).svg';
 import iconChevronDown from '../assets/iconstack.io - (Chevron Down).svg';
 import iconChevronUp from '../assets/iconstack.io - (Chevron Up).svg';
 import iconClose from '../assets/iconstack.io - (Multiply Line).svg';
+import { createTaskId, formatDeadlineLabel, parseDeadlineInput, type PlannedTask, type TaskPriority } from '../taskPlanner';
 
 const menuItems = [
   { label: 'Home', icon: iconHome },
@@ -40,11 +41,10 @@ const subjects = [
   { name: 'Other', image: imgOther, color: '#8E8E8E' },
 ];
 
-const priorityOptions = ['High', 'Medium', 'Low'] as const;
-
 type AddTaskPageProps = {
   onSignOut?: () => void;
   onNavigate?: (page: string) => void;
+  onCreateTask?: (task: PlannedTask) => void;
 };
 
 function Sidebar({ onSignOut, onNavigate }: { onSignOut?: () => void; onNavigate?: (page: string) => void }) {
@@ -98,17 +98,44 @@ function Sidebar({ onSignOut, onNavigate }: { onSignOut?: () => void; onNavigate
   );
 }
 
-function AddTaskMain({ onNavigate }: { onNavigate?: (page: string) => void }) {
+function AddTaskMain({
+  onNavigate,
+  onCreateTask,
+}: {
+  onNavigate?: (page: string) => void;
+  onCreateTask?: (task: PlannedTask) => void;
+}) {
   const [taskTitle, setTaskTitle] = useState('');
   const [selectedSubject, setSelectedSubject] = useState<string | null>(null);
   const [deadline, setDeadline] = useState('');
   const [estHours, setEstHours] = useState('1h');
-  const [priority, setPriority] = useState<'LOW' | 'Medium' | 'High'>('Medium');
+  const [priority, setPriority] = useState<TaskPriority>('Medium');
   const [notes, setNotes] = useState('');
+  const [formError, setFormError] = useState('');
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    console.log('Task created:', { taskTitle, selectedSubject, priority, deadline, estHours, notes });
+    const normalizedDeadline = parseDeadlineInput(deadline);
+
+    if (!selectedSubject || !normalizedDeadline) {
+      setFormError('Please choose a subject and deadline before saving the task.');
+      return;
+    }
+
+    setFormError('');
+
+    const task: PlannedTask = {
+      id: createTaskId(),
+      title: taskTitle.trim(),
+      subject: selectedSubject,
+      deadlineISO: normalizedDeadline,
+      deadlineLabel: formatDeadlineLabel(normalizedDeadline),
+      estHours,
+      priority,
+      notes: notes.trim(),
+    };
+
+    onCreateTask?.(task);
     onNavigate?.('home');
   };
 
@@ -182,6 +209,7 @@ function AddTaskMain({ onNavigate }: { onNavigate?: (page: string) => void }) {
                   </button>
                 ))}
               </div>
+              {formError && <p className="mt-3 text-[13px] font-['Calibri'] text-[#ef4444]">{formError}</p>}
             </div>
 
             {/* Deadline & Est. Hours */}
@@ -193,10 +221,9 @@ function AddTaskMain({ onNavigate }: { onNavigate?: (page: string) => void }) {
                 </label>
                 <div className="relative">
                   <input
-                    type="text"
+                    type="date"
                     value={deadline}
                     onChange={(e) => setDeadline(e.target.value)}
-                    placeholder="dd/mm/yyyy"
                     className="h-[52px] w-full rounded-[12px] border border-[#cbd5e1] bg-white px-4 pr-12 font-['Calibri'] text-[15px] text-[#0f172a] placeholder-[#94a3b8] focus:border-[#3b82f6] focus:outline-none focus:ring-1 focus:ring-[#3b82f6]"
                   />
                   <img src={iconCalendar} alt="" className="absolute right-4 top-1/2 -translate-y-1/2 h-5 w-5 opacity-50" />
@@ -230,9 +257,9 @@ function AddTaskMain({ onNavigate }: { onNavigate?: (page: string) => void }) {
                 {/* LOW */}
                 <button
                   type="button"
-                  onClick={() => setPriority('LOW')}
+                  onClick={() => setPriority('Low')}
                   className={`flex-1 rounded-[16px] border-2 p-5 text-left transition-all ${
-                    priority === 'LOW' ? 'border-[#22c55e] bg-[#f0fdf4]' : 'border-[#e2e8f0] bg-white hover:border-[#22c55e]'
+                    priority === 'Low' ? 'border-[#22c55e] bg-[#f0fdf4]' : 'border-[#e2e8f0] bg-white hover:border-[#22c55e]'
                   }`}
                 >
                   <p className="text-[18px] font-['Calibri'] font-bold text-[#22c55e]">LOW</p>
@@ -306,14 +333,14 @@ function AddTaskMain({ onNavigate }: { onNavigate?: (page: string) => void }) {
   );
 }
 
-export default function AddTaskPage({ onSignOut, onNavigate }: AddTaskPageProps) {
+export default function AddTaskPage({ onSignOut, onNavigate, onCreateTask }: AddTaskPageProps) {
   return (
     <div className="flex min-h-screen bg-white">
       <div className="hidden md:block w-[220px] lg:w-[250px] xl:w-[270px] flex-shrink-0">
         <Sidebar onSignOut={onSignOut} onNavigate={onNavigate} />
       </div>
       <div className="flex-1 min-w-0 overflow-y-auto">
-        <AddTaskMain onNavigate={onNavigate} />
+        <AddTaskMain onNavigate={onNavigate} onCreateTask={onCreateTask} />
       </div>
     </div>
   );

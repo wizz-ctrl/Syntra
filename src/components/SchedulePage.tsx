@@ -11,6 +11,7 @@ import iconProfile from '../assets/iconstack.io - (Profile Circle).svg';
 import iconLogout from '../assets/iconstack.io - (Log Out).svg';
 import iconArrowLeft from '../assets/iconstack.io - (Alt Arrow Left).svg';
 import iconArrowRight from '../assets/iconstack.io - (Alt Arrow Right).svg';
+import { formatDeadlineLabel, getWeekDays, type PlannedTask } from '../taskPlanner';
 
 const menuItems = [
   { label: 'Home', icon: iconHome },
@@ -18,14 +19,6 @@ const menuItems = [
   { label: 'Schedule', icon: iconSchedule, active: true },
   { label: 'Analytics', icon: iconAnalytics },
   { label: 'Profile', icon: iconProfile },
-];
-
-const days = [
-  { day: 'MON', date: '14', active: true },
-  { day: 'TUE', date: '15', active: false },
-  { day: 'WED', date: '16', active: false },
-  { day: 'THU', date: '17', active: false },
-  { day: 'FRI', date: '18', active: false },
 ];
 
 const events = [
@@ -100,7 +93,55 @@ function Sidebar({ onSignOut, onNavigate }: { onSignOut?: () => void; onNavigate
   );
 }
 
-function ScheduleMain() {
+function AddedTaskCard({ task }: { task: PlannedTask }) {
+  const priorityStyles = {
+    Low: 'border-[#22c55e] bg-[#f0fdf4] text-[#15803d]',
+    Medium: 'border-[#eab308] bg-[#fefce8] text-[#a16207]',
+    High: 'border-[#ef4444] bg-[#fef2f2] text-[#b91c1c]',
+  } as const;
+
+  return (
+    <article className="rounded-[14px] border border-[#e2e8f0] bg-[#f8fafc] p-4">
+      <div className="flex flex-wrap items-start justify-between gap-3">
+        <div>
+          <p className="text-[12px] font-['Calibri'] font-bold text-[#8e8e8e]">{task.subject}</p>
+          <h4 className="mt-1 text-[17px] font-['Calibri'] font-bold text-black">{task.title}</h4>
+          <p className="mt-1 text-[12px] font-['Calibri'] text-[#8e8e8e]">Due {formatDeadlineLabel(task.deadlineISO)}</p>
+        </div>
+        <span className={`rounded-full border px-3 py-1 text-[11px] font-['Calibri'] font-bold ${priorityStyles[task.priority]}`}>
+          {task.priority}
+        </span>
+      </div>
+      {task.notes ? <p className="mt-3 text-[12px] leading-snug font-['Calibri'] text-[#64748b]">{task.notes}</p> : null}
+    </article>
+  );
+}
+
+function ScheduleMain({ tasks = [] }: { tasks?: PlannedTask[] }) {
+  const days = getWeekDays();
+  const weekStart = days[0];
+  const weekEnd = days[days.length - 1];
+  const groupedTasks = tasks
+    .reduce<Record<string, PlannedTask[]>>((groups, task) => {
+      if (!groups[task.deadlineISO]) {
+        groups[task.deadlineISO] = [];
+      }
+      groups[task.deadlineISO].push(task);
+      return groups;
+    }, {})
+    ;
+  const groupedTaskEntries = Object.entries(groupedTasks).sort(([firstDate], [secondDate]) => firstDate.localeCompare(secondDate));
+
+  // map subjects to visuals (reuse assets available in this file via imports)
+  const subjectMap: Record<string, { color: string }> = {
+    'Operating Systems': { color: '#1CE931' },
+    'Deep Learning': { color: '#58A1E1' },
+    'Cyber Security': { color: '#00CCFF' },
+    'Parallel and Distributed Computing': { color: '#B3C306' },
+    'Compiler Construction': { color: '#5454B7' },
+    Other: { color: '#8E8E8E' },
+  };
+
   return (
     <main className="bg-[#F0F0FF] min-h-screen overflow-y-auto flex flex-col">
       <div className="flex-1 flex flex-col p-5 lg:p-8 max-w-[1200px] w-full mx-auto">
@@ -122,7 +163,9 @@ function ScheduleMain() {
                 <button type="button" className="hover:bg-gray-100 p-1 rounded transition-colors">
                   <img src={iconArrowLeft} alt="Previous" className="h-4 w-4" />
                 </button>
-                <span className="text-[13px] font-['Calibri'] font-bold text-[#8e8e8e]">Apr 14 – Apr 18 (This Week)</span>
+                <span className="text-[13px] font-['Calibri'] font-bold text-[#8e8e8e]">
+                  {formatDeadlineLabel(weekStart.iso)} – {formatDeadlineLabel(weekEnd.iso)} (This Week)
+                </span>
                 <button type="button" className="hover:bg-gray-100 p-1 rounded transition-colors">
                   <img src={iconArrowRight} alt="Next" className="h-4 w-4" />
                 </button>
@@ -159,8 +202,8 @@ function ScheduleMain() {
           <div className="flex border-b border-[#EEEEEE] bg-[#fdfdfd]">
             <div className="w-[60px] flex-shrink-0 border-r border-[#EEEEEE] bg-[#f8fafc]"></div>
             {days.map((d) => (
-              <div key={d.day} className={`flex-1 py-4 text-center border-r border-[#EEEEEE] last:border-r-0 ${d.active ? 'bg-[#EAEAFF]' : 'bg-white'}`}>
-                <p className={`text-[12px] font-['Calibri'] font-bold ${d.active ? 'text-[#000070]' : 'text-black'}`}>{d.day}</p>
+              <div key={d.key} className={`flex-1 py-4 text-center border-r border-[#EEEEEE] last:border-r-0 ${d.active ? 'bg-[#EAEAFF]' : 'bg-white'}`}>
+                <p className={`text-[12px] font-['Calibri'] font-bold ${d.active ? 'text-[#000070]' : 'text-black'}`}>{d.label}</p>
                 <p className={`mt-1 text-[22px] font-['Calibri'] font-bold ${d.active ? 'text-[#000070]' : 'text-black'}`}>{d.date}</p>
                 {d.active ? (
                   <div className="mt-1.5 flex justify-center">
@@ -198,37 +241,86 @@ function ScheduleMain() {
             {/* Event Columns */}
             <div className="flex-1 flex relative z-10">
               {days.map((d) => (
-                <div key={d.day} className="flex-1 border-r border-[#EEEEEE] last:border-r-0 relative">
-                  {events
-                    .filter((e) => e.day === d.day)
-                    .map((event, i) => (
-                      <div
-                        key={i}
-                        className="absolute rounded-r-[8px] rounded-l-[4px] px-4 py-2.5 overflow-hidden transition-transform hover:scale-[1.01] cursor-pointer flex flex-col justify-center"
-                        style={{
-                          left: '8px',
-                          right: '8px',
-                          top: `${(event.startHour - 8) * 60 + 6}px`,
-                          height: `${event.durationHours * 60 - 12}px`,
-                          backgroundColor: event.bg,
-                          borderLeft: `6px solid ${event.borderLeftColor}`,
-                        }}
-                      >
-                        <p className="text-[16px] font-['Calibri'] font-bold leading-snug" style={{ color: event.textColor }}>
-                          {event.title}
-                        </p>
-                        {event.subtitle && (
-                          <p className="mt-1 text-[14px] font-['Calibri'] leading-snug" style={{ color: event.textColor }}>
-                            {event.subtitle}
+                  <div key={d.key} className="flex-1 border-r border-[#EEEEEE] last:border-r-0 relative">
+                    {(() => {
+                      // collect default events for this day
+                      const baseEvents = events.filter((e) => e.day === d.key);
+                      // convert tasks whose deadlineISO matches this day's iso into events
+                      const taskEvents = (tasks || [])
+                        .filter((t) => t.deadlineISO === d.iso)
+                        .map((t) => {
+                          const duration = Number(t.estHours.replace(/[^0-9]/g, '')) || 1;
+                          const startHour = 16; // place new tasks at 4pm by default
+                          const meta = subjectMap[t.subject] ?? { color: '#8484F1' };
+                          return {
+                            day: d.key,
+                            startHour,
+                            durationHours: duration,
+                            title: t.subject,
+                            subtitle: t.title,
+                            bg: '#f8fafc',
+                            borderLeftColor: meta.color,
+                            textColor: '#000',
+                          };
+                        });
+
+                      const all = [...baseEvents, ...taskEvents];
+                      return all.map((event, i) => (
+                        <div
+                          key={i}
+                          className="absolute rounded-r-[8px] rounded-l-[4px] px-4 py-2.5 overflow-hidden transition-transform hover:scale-[1.01] cursor-pointer flex flex-col justify-center"
+                          style={{
+                            left: '8px',
+                            right: '8px',
+                            top: `${(event.startHour - 8) * 60 + 6}px`,
+                            height: `${event.durationHours * 60 - 12}px`,
+                            backgroundColor: event.bg,
+                            borderLeft: `6px solid ${event.borderLeftColor}`,
+                          }}
+                        >
+                          <p className="text-[16px] font-['Calibri'] font-bold leading-snug" style={{ color: event.textColor }}>
+                            {event.title}
                           </p>
-                        )}
-                      </div>
-                    ))}
-                </div>
-              ))}
+                          {event.subtitle && (
+                            <p className="mt-1 text-[14px] font-['Calibri'] leading-snug" style={{ color: event.textColor }}>
+                              {event.subtitle}
+                            </p>
+                          )}
+                        </div>
+                      ));
+                    })()}
+                  </div>
+                ))}
             </div>
           </div>
         </div>
+
+        {groupedTaskEntries.length > 0 ? (
+          <section className="mt-5 rounded-[12px] border border-[#b4b4b4] bg-white p-5 shadow-sm">
+            <div className="flex flex-wrap items-center justify-between gap-3">
+              <h3 className="text-[22px] leading-none font-['Calibri'] font-bold text-black">Added Tasks</h3>
+              <p className="text-[13px] font-['Calibri'] text-[#8e8e8e]">Grouped by saved due date</p>
+            </div>
+
+            <div className="mt-4 space-y-6">
+              {groupedTaskEntries.map(([deadlineISO, dayTasks]) => (
+                <div key={deadlineISO}>
+                  <div className="flex items-center justify-between gap-3">
+                    <h4 className="text-[16px] font-['Calibri'] font-bold text-[#000070]">{formatDeadlineLabel(deadlineISO)}</h4>
+                    <span className="rounded-full bg-[#f0f0ff] px-3 py-1 text-[12px] font-['Calibri'] font-bold text-[#000070]">
+                      {dayTasks.length} task{dayTasks.length === 1 ? '' : 's'}
+                    </span>
+                  </div>
+                  <div className="mt-3 grid gap-3 md:grid-cols-2">
+                    {dayTasks.map((task) => (
+                      <AddedTaskCard key={task.id} task={task} />
+                    ))}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </section>
+        ) : null}
 
         {/* Footer */}
         <footer className="mt-10 border-t border-[#b4b4b4] pt-4 text-center">
@@ -239,14 +331,14 @@ function ScheduleMain() {
   );
 }
 
-export default function SchedulePage({ onSignOut, onNavigate }: { onSignOut?: () => void; onNavigate?: (page: string) => void }) {
+export default function SchedulePage({ onSignOut, onNavigate, tasks }: { onSignOut?: () => void; onNavigate?: (page: string) => void; tasks?: PlannedTask[] }) {
   return (
     <div className="flex min-h-screen bg-white">
       <div className="hidden md:block w-[220px] lg:w-[250px] xl:w-[270px] flex-shrink-0">
         <Sidebar onSignOut={onSignOut} onNavigate={onNavigate} />
       </div>
       <div className="flex-1 min-w-0 overflow-y-auto">
-        <ScheduleMain />
+        <ScheduleMain tasks={tasks} />
       </div>
     </div>
   );
