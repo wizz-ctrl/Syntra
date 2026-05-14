@@ -2,7 +2,7 @@
 
 **Syntra** is a prototype for an AI-powered study planner application, developed as a Software Engineering Project. The application acts as an intelligent scheduling engine that helps students effortlessly organize their tasks, track their academic analytics, and manage their study sessions with an optimized, auto-generated calendar. 
 
-The UI/UX is built with absolute pixel-perfect fidelity based on modern design principles, focusing on providing a clean, distraction-free, and highly responsive user experience.
+The UI/UX is built with absolute pixel-perfect fidelity based on modern design principles, focusing on providing a clean, distraction-free, and highly responsive user experience. It helps students to optimize their study schedules.
 
 ## ✨ Features
 
